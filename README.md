@@ -1,5 +1,13 @@
 # Joblyst — Production-Ready AI-Powered MERN Job Portal
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://joblyst-psi.vercel.app/)
+[![Live Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://joblyst-ul4u.onrender.com/api/health)
+[![MongoDB Atlas](https://img.shields.io/badge/Database-MongoDB_Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+
+> 🌐 **Live Website:** [https://joblyst-psi.vercel.app/](https://joblyst-psi.vercel.app/)  
+> ⚡ **Live Backend API:** [https://joblyst-ul4u.onrender.com/api](https://joblyst-ul4u.onrender.com/api)  
+> 🩺 **API Health Check:** [https://joblyst-ul4u.onrender.com/api/health](https://joblyst-ul4u.onrender.com/api/health)
+
 A full-stack, enterprise-grade Job Portal web application built with the **MERN Stack (MongoDB, Express, React, Node.js)**, **Redux Toolkit**, **Tailwind CSS**, and **Framer Motion**. Features end-to-end **Role-Based Access Control (Job Seeker / Recruiter)**, **Cryptographic OTP Email Verification**, **Protected Routes**, **Cloudinary & Multer Resume Uploads**, and **Modular AI Integrations** (Resume Analyzer, Job-Match Scoring, AI Job Description Generator, and AI Interview Preparation).
 
 ---
@@ -227,19 +235,29 @@ npm run dev
 
 ---
 
-## 🚀 Deploying to Render
+## 🚀 Production Deployment & Architecture
+
+| Tier | Service Platform | Live Production URL | Health / Status |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | **Vercel** (Global Edge CDN) | [https://joblyst-psi.vercel.app/](https://joblyst-psi.vercel.app/) | Active (Vite SPA with `vercel.json` rewrites) |
+| **Backend** | **Render** (Web Service) | [https://joblyst-ul4u.onrender.com/api](https://joblyst-ul4u.onrender.com/api) | [Active (200 OK)](https://joblyst-ul4u.onrender.com/api/health) |
+| **Database** | **MongoDB Atlas** | Cloud Replica Set (`joblyst`) | Connected |
+
+---
+
+### Backend Deployment Guide (Render)
 
 Render blocks outbound SMTP traffic on ports `25`, `465`, and `587` on free tier services. JOBLYST uses the **Brevo Transactional Email REST API over HTTPS (Port 443)** to guarantee 100% reliable email delivery with zero SMTP timeouts.
 
-### Step 1: Set Up Your Free Brevo Account
+#### 1. Set Up Your Free Brevo Account
 1. Create a free account at [brevo.com](https://www.brevo.com) (includes 300 free emails/day).
 2. Go to **SMTP & API** -> **API Keys** -> Click **Generate a new API key**. Copy the key (starts with `xkeysib-...`).
 3. Go to **Senders, Domains & Dedicated IPs** -> **Senders** -> Click **Add a Sender**.
 4. Enter your email (e.g. `yourname@gmail.com`) and confirm the verification email sent to your inbox.
 
-### Step 2: Deploy Backend Web Service on Render
+#### 2. Deploy Backend Web Service on Render
 1. In Render Dashboard, click **New +** -> **Web Service**.
-2. Connect your GitHub repository.
+2. Connect your GitHub repository (`Subhadeep2609/joblyst`).
 3. Configure the service:
    - **Name:** `joblyst-backend`
    - **Root Directory:** `backend`
@@ -255,26 +273,22 @@ Render blocks outbound SMTP traffic on ports `25`, `465`, and `587` on free tier
    - `BREVO_API_KEY`: *Your Brevo API Key (`xkeysib-...`)*
    - `BREVO_SENDER_EMAIL`: *Your verified sender email in Brevo*
    - `BREVO_SENDER_NAME`: `JOBLYST`
-   - `CLIENT_URL`: `https://joblyst-frontend.onrender.com` *(or your frontend domain)*
+   - `CLIENT_URL`: `https://joblyst-psi.vercel.app`
    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: *(Your Cloudinary keys for resume storage)*
    - `OPENAI_API_KEY`: *(Optional OpenAI key)*
    - `GOOGLE_CLIENT_ID`: *(Optional Google OAuth client ID)*
 
-### Step 3: Deploy Frontend Static Site on Render
-1. In Render Dashboard, click **New +** -> **Static Site**.
-2. Connect your GitHub repository.
-3. Configure the site:
-   - **Name:** `joblyst-frontend`
-   - **Root Directory:** `frontend`
-   - **Build Command:** `npm install && npm run build`
-   - **Publish Directory:** `dist`
+---
+
+### Frontend Deployment Guide (Vercel)
+
+1. In Vercel Dashboard, click **Add New...** -> **Project**.
+2. Import `Subhadeep2609/joblyst`.
+3. Set **Root Directory** to `frontend`.
 4. Add **Environment Variables**:
-   - `VITE_API_URL`: `https://joblyst-backend.onrender.com/api` *(Your deployed backend URL)*
-   - `VITE_GOOGLE_CLIENT_ID`: *(Optional Google OAuth client ID)*
-5. In **Redirects / Rewrites**, add a rewrite rule to support React Router SPA:
-   - **Type:** `Rewrite`
-   - **Source:** `/*`
-   - **Destination:** `/index.html`
+   - `VITE_API_URL`: `https://joblyst-ul4u.onrender.com/api`
+   - `VITE_GOOGLE_CLIENT_ID`: `817130340910-iriv8ir67umje7q17p7t7b0jpaf0r6nt.apps.googleusercontent.com`
+5. Click **Deploy**. Single-page routing is automatically handled via [`frontend/vercel.json`](file:///c:/Users/Subhadeep%20Saha/Desktop/Job_Portal_Project/frontend/vercel.json).
 
 ---
 
