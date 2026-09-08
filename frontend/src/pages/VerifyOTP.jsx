@@ -141,8 +141,8 @@ const VerifyOTP = () => {
         )}
 
         {/* OTP Input Form */}
-        <form onSubmit={handleSubmit} className="card-surface p-6 sm:p-8 space-y-6 shadow-md">
-          <div className="flex justify-between gap-2" onPaste={handlePaste}>
+        <form onSubmit={handleSubmit} className="card-surface p-4 sm:p-8 space-y-6 shadow-md">
+          <div className="flex justify-between gap-1.5 sm:gap-2" onPaste={handlePaste}>
             {otpValues.map((val, idx) => (
               <input
                 key={idx}
@@ -153,7 +153,7 @@ const VerifyOTP = () => {
                 value={val}
                 onChange={(e) => handleOtpChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
-                className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-mono font-bold rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-400 focus:border-transparent transition-all"
+                className="w-9 h-12 sm:w-12 sm:h-14 text-center text-lg sm:text-xl font-mono font-bold rounded-lg sm:rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-400 focus:border-transparent transition-all"
               />
             ))}
           </div>

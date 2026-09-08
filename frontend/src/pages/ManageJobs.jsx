@@ -76,78 +76,72 @@ const ManageJobs = () => {
             <Loader message="Loading posted jobs..." />
           </div>
         ) : recruiterJobs.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
-                  <th className="pb-3 font-semibold">Title & Category</th>
-                  <th className="pb-3 font-semibold">Type</th>
-                  <th className="pb-3 font-semibold">Status</th>
-                  <th className="pb-3 font-semibold">Applications</th>
-                  <th className="pb-3 font-semibold">Posted Date</th>
-                  <th className="pb-3 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-                {recruiterJobs.map((job) => (
-                  <tr key={job._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
-                    <td className="py-3.5 pr-4">
+          <>
+            {/* Mobile Card Layout (Screens < md) */}
+            <div className="md:hidden space-y-3.5">
+              {recruiterJobs.map((job) => (
+                <div
+                  key={job._id}
+                  className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
                       <Link
                         to={`/jobs/${job._id}`}
-                        className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline flex items-center gap-1.5"
+                        className="font-bold text-zinc-900 dark:text-zinc-100 hover:underline text-sm flex items-center gap-1.5"
                       >
                         {job.title}
                         <ExternalLink className="w-3 h-3 text-zinc-400" />
                       </Link>
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                         {job.category} &bull; {job.location}
                       </p>
-                    </td>
+                    </div>
 
-                    <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
-                      {job.jobType} ({job.workplaceType})
-                    </td>
+                    <select
+                      value={job.status}
+                      onChange={(e) => handleStatusChange(job._id, e.target.value)}
+                      className={`text-[11px] font-semibold py-1 px-2 rounded-md border cursor-pointer focus:outline-none ${
+                        job.status === 'published'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                          : job.status === 'draft'
+                          ? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700'
+                          : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'
+                      }`}
+                    >
+                      <option value="published">Published</option>
+                      <option value="draft">Draft</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </div>
 
-                    <td className="py-3.5 pr-4">
-                      <select
-                        value={job.status}
-                        onChange={(e) => handleStatusChange(job._id, e.target.value)}
-                        className={`text-[11px] font-semibold py-1 px-2 rounded-md border cursor-pointer focus:outline-none ${
-                          job.status === 'published'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-                            : job.status === 'draft'
-                            ? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700'
-                            : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'
-                        }`}
-                      >
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                        <option value="closed">Closed</option>
-                      </select>
-                    </td>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    <span className="px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 font-medium">
+                      {job.jobType}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 font-medium">
+                      {job.workplaceType}
+                    </span>
+                    <span>Posted {new Date(job.createdAt).toLocaleDateString()}</span>
+                  </div>
 
-                    <td className="py-3.5 pr-4">
-                      <Link
-                        to={`/recruiter/jobs/${job._id}/applications`}
-                        className="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-400 hover:underline"
-                      >
-                        <Users className="w-3.5 h-3.5" />
-                        <span>{job.applicationsCount || 0} applicants</span>
-                      </Link>
-                    </td>
+                  <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/80 flex items-center justify-between gap-2">
+                    <Link
+                      to={`/recruiter/jobs/${job._id}/applications`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{job.applicationsCount || 0} applicants</span>
+                    </Link>
 
-                    <td className="py-3.5 pr-4 text-zinc-500 dark:text-zinc-400">
-                      {new Date(job.createdAt).toLocaleDateString()}
-                    </td>
-
-                    <td className="py-3.5 text-right space-x-2">
+                    <div className="flex items-center gap-1.5">
                       <Link
                         to={`/recruiter/jobs/${job._id}/applications`}
                         className="btn-secondary text-xs py-1 px-2.5 inline-flex items-center gap-1"
-                        title="Review candidate resumes"
+                        title="Review applicants"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        Review
+                        <span>Review</span>
                       </Link>
 
                       <Link
@@ -156,23 +150,122 @@ const ManageJobs = () => {
                         title="Edit posting"
                       >
                         <Edit className="w-3.5 h-3.5" />
-                        Edit
+                        <span>Edit</span>
                       </Link>
 
                       <button
                         type="button"
                         onClick={() => handleDelete(job._id, job.title)}
-                        className="btn-secondary text-xs py-1 px-2.5 inline-flex items-center gap-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        className="btn-secondary text-xs py-1 px-2 inline-flex items-center text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
                         title="Delete posting"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table Layout (Screens >= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
+                    <th className="pb-3 font-semibold">Title & Category</th>
+                    <th className="pb-3 font-semibold">Type</th>
+                    <th className="pb-3 font-semibold">Status</th>
+                    <th className="pb-3 font-semibold">Applications</th>
+                    <th className="pb-3 font-semibold">Posted Date</th>
+                    <th className="pb-3 font-semibold text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                  {recruiterJobs.map((job) => (
+                    <tr key={job._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                      <td className="py-3.5 pr-4">
+                        <Link
+                          to={`/jobs/${job._id}`}
+                          className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline flex items-center gap-1.5"
+                        >
+                          {job.title}
+                          <ExternalLink className="w-3 h-3 text-zinc-400" />
+                        </Link>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          {job.category} &bull; {job.location}
+                        </p>
+                      </td>
+
+                      <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                        {job.jobType} ({job.workplaceType})
+                      </td>
+
+                      <td className="py-3.5 pr-4">
+                        <select
+                          value={job.status}
+                          onChange={(e) => handleStatusChange(job._id, e.target.value)}
+                          className={`text-[11px] font-semibold py-1 px-2 rounded-md border cursor-pointer focus:outline-none ${
+                            job.status === 'published'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                              : job.status === 'draft'
+                              ? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700'
+                              : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'
+                          }`}
+                        >
+                          <option value="published">Published</option>
+                          <option value="draft">Draft</option>
+                          <option value="closed">Closed</option>
+                        </select>
+                      </td>
+
+                      <td className="py-3.5 pr-4">
+                        <Link
+                          to={`/recruiter/jobs/${job._id}/applications`}
+                          className="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>{job.applicationsCount || 0} applicants</span>
+                        </Link>
+                      </td>
+
+                      <td className="py-3.5 pr-4 text-zinc-500 dark:text-zinc-400">
+                        {new Date(job.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="py-3.5 text-right space-x-2">
+                        <Link
+                          to={`/recruiter/jobs/${job._id}/applications`}
+                          className="btn-secondary text-xs py-1 px-2.5 inline-flex items-center gap-1"
+                          title="Review candidate resumes"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          Review
+                        </Link>
+
+                        <Link
+                          to={`/recruiter/jobs/${job._id}/edit`}
+                          className="btn-secondary text-xs py-1 px-2.5 inline-flex items-center gap-1"
+                          title="Edit posting"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          Edit
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(job._id, job.title)}
+                          className="btn-secondary text-xs py-1 px-2.5 inline-flex items-center gap-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          title="Delete posting"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-12 text-center space-y-3">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">

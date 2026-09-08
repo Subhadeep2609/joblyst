@@ -146,52 +146,93 @@ const JobSeekerDashboard = () => {
         </div>
 
         {myApplications.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
-                  <th className="pb-3 font-semibold">Job Title & Company</th>
-                  <th className="pb-3 font-semibold">Location</th>
-                  <th className="pb-3 font-semibold">Applied Date</th>
-                  <th className="pb-3 font-semibold">Current Status</th>
-                  <th className="pb-3 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-                {myApplications.slice(0, 5).map((app) => (
-                  <tr key={app._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
-                    <td className="py-3.5 pr-4">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+          <>
+            {/* Mobile Card Layout (Screens < md) */}
+            <div className="md:hidden space-y-3">
+              {myApplications.slice(0, 5).map((app) => (
+                <div
+                  key={app._id}
+                  className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
                         {app.job?.title || 'Position'}
                       </p>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                        {app.job?.company}
+                        {app.job?.company} &bull; {app.job?.location || 'Remote'}
                       </p>
-                    </td>
-                    <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
-                      {app.job?.location || 'Remote'}
-                    </td>
-                    <td className="py-3.5 pr-4 text-zinc-500 dark:text-zinc-400">
-                      {new Date(app.appliedAt).toLocaleDateString()}
-                    </td>
-                    <td className="py-3.5 pr-4">
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-semibold ${getStatusBadge(app.status)}`}>
-                        {app.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 text-right">
-                      <Link
-                        to={`/applications`}
-                        className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-sky-500 dark:hover:text-sky-400"
-                      >
-                        Timeline &rarr;
-                      </Link>
-                    </td>
+                    </div>
+
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold shrink-0 ${getStatusBadge(app.status)}`}>
+                      {app.status}
+                    </span>
+                  </div>
+
+                  <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/80 flex items-center justify-between text-[11px]">
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      Applied {new Date(app.appliedAt).toLocaleDateString()}
+                    </span>
+
+                    <Link
+                      to="/applications"
+                      className="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-sky-500 dark:hover:text-sky-400"
+                    >
+                      View Timeline &rarr;
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (Screens >= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
+                    <th className="pb-3 font-semibold">Job Title & Company</th>
+                    <th className="pb-3 font-semibold">Location</th>
+                    <th className="pb-3 font-semibold">Applied Date</th>
+                    <th className="pb-3 font-semibold">Current Status</th>
+                    <th className="pb-3 font-semibold text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                  {myApplications.slice(0, 5).map((app) => (
+                    <tr key={app._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                      <td className="py-3.5 pr-4">
+                        <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+                          {app.job?.title || 'Position'}
+                        </p>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          {app.job?.company}
+                        </p>
+                      </td>
+                      <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                        {app.job?.location || 'Remote'}
+                      </td>
+                      <td className="py-3.5 pr-4 text-zinc-500 dark:text-zinc-400">
+                        {new Date(app.appliedAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-3.5 pr-4">
+                        <span className={`px-2.5 py-1 rounded-md text-[11px] font-semibold ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 text-right">
+                        <Link
+                          to={`/applications`}
+                          className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-sky-500 dark:hover:text-sky-400"
+                        >
+                          Timeline &rarr;
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-8 text-center space-y-2">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">

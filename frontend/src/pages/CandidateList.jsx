@@ -49,7 +49,7 @@ const CandidateList = () => {
       {/* Search Bar */}
       <form
         onSubmit={handleSearchSubmit}
-        className="card-surface p-4 grid grid-cols-1 sm:grid-cols-3 gap-3"
+        className="card-surface p-4 grid grid-cols-1 md:grid-cols-3 gap-3"
       >
         <div className="relative">
           <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />

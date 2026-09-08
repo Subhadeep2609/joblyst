@@ -103,24 +103,17 @@ const ManageApplications = () => {
       {/* Applications Table / Cards */}
       <div className="card-surface p-6">
         {applications && applications.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
-                  <th className="pb-3 font-semibold">Candidate</th>
-                  <th className="pb-3 font-semibold">Skills Profile</th>
-                  <th className="pb-3 font-semibold">Resume & Note</th>
-                  <th className="pb-3 font-semibold">Current Stage</th>
-                  <th className="pb-3 font-semibold">Applied</th>
-                  <th className="pb-3 font-semibold text-right">Update Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-                {applications.map((app) => (
-                  <tr key={app._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
-                    {/* Candidate info */}
-                    <td className="py-4 pr-4">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
+          <>
+            {/* Mobile Candidate Card Layout (Screens < md) */}
+            <div className="md:hidden space-y-3.5">
+              {applications.map((app) => (
+                <div
+                  key={app._id}
+                  className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
                         {app.candidate?.name || 'Applicant'}
                       </p>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
@@ -132,72 +125,69 @@ const ManageApplications = () => {
                           "{app.candidate.profile.headline}"
                         </p>
                       )}
-                    </td>
+                    </div>
 
-                    {/* Skills */}
-                    <td className="py-4 pr-4 max-w-xs">
-                      <div className="flex flex-wrap gap-1">
-                        {(app.candidate?.profile?.skills || []).slice(0, 4).map((s, idx) => (
-                          <span
-                            key={idx}
-                            className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-[10px]"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                        {(app.candidate?.profile?.skills?.length || 0) > 4 && (
-                          <span className="text-[10px] text-zinc-400">
-                            +{app.candidate.profile.skills.length - 4}
-                          </span>
-                        )}
-                      </div>
-                    </td>
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-semibold shrink-0 ${getStatusBadge(app.status)}`}>
+                      {app.status}
+                    </span>
+                  </div>
 
-                    {/* Resume & Cover Letter */}
-                    <td className="py-4 pr-4 space-y-1">
-                      {app.resume && (
-                        <a
-                          href={app.resume}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                  {/* Skills */}
+                  {app.candidate?.profile?.skills?.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {app.candidate.profile.skills.slice(0, 5).map((s, idx) => (
+                        <span
+                          key={idx}
+                          className="px-1.5 py-0.5 rounded bg-zinc-200/70 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-[10px]"
                         >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>{app.resumeOriginalName || 'Resume.pdf'}</span>
-                        </a>
+                          {s}
+                        </span>
+                      ))}
+                      {app.candidate.profile.skills.length > 5 && (
+                        <span className="text-[10px] text-zinc-400">
+                          +{app.candidate.profile.skills.length - 5}
+                        </span>
                       )}
-                      {app.coverLetter && (
-                        <div>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedLetter(app.coverLetter)}
-                            className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 underline"
-                          >
-                            <MessageSquare className="w-3 h-3" />
-                            Read Cover Letter
-                          </button>
-                        </div>
-                      )}
-                    </td>
+                    </div>
+                  )}
 
-                    {/* Current Stage */}
-                    <td className="py-4 pr-4">
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-semibold ${getStatusBadge(app.status)}`}>
-                        {app.status}
-                      </span>
-                    </td>
+                  {/* Resume & Cover Letter */}
+                  <div className="flex flex-wrap items-center gap-3 text-xs pt-1 border-t border-zinc-200/60 dark:border-zinc-800/80">
+                    {app.resume && (
+                      <a
+                        href={app.resume}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>{app.resumeOriginalName || 'Download Resume'}</span>
+                      </a>
+                    )}
+                    {app.coverLetter && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLetter(app.coverLetter)}
+                        className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 underline"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        Read Note
+                      </button>
+                    )}
+                  </div>
 
-                    {/* Date */}
-                    <td className="py-4 pr-4 text-zinc-500 dark:text-zinc-400 text-[11px]">
-                      {new Date(app.appliedAt).toLocaleDateString()}
-                    </td>
+                  {/* Status update + Date */}
+                  <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/80 flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                      Applied {new Date(app.appliedAt).toLocaleDateString()}
+                    </span>
 
-                    {/* Status updater dropdown */}
-                    <td className="py-4 text-right">
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-zinc-400 font-medium">Stage:</label>
                       <select
                         value={app.status}
                         onChange={(e) => handleStatusUpdate(app._id, e.target.value)}
-                        className="text-xs font-semibold py-1 px-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 cursor-pointer focus:outline-none"
+                        className="text-xs font-semibold py-1 px-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 cursor-pointer focus:outline-none"
                       >
                         <option value="Applied">Applied</option>
                         <option value="Under Review">Under Review</option>
@@ -206,12 +196,123 @@ const ManageApplications = () => {
                         <option value="Hired">Hired</option>
                         <option value="Rejected">Rejected</option>
                       </select>
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table Layout (Screens >= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
+                    <th className="pb-3 font-semibold">Candidate</th>
+                    <th className="pb-3 font-semibold">Skills Profile</th>
+                    <th className="pb-3 font-semibold">Resume & Note</th>
+                    <th className="pb-3 font-semibold">Current Stage</th>
+                    <th className="pb-3 font-semibold">Applied</th>
+                    <th className="pb-3 font-semibold text-right">Update Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                  {applications.map((app) => (
+                    <tr key={app._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                      {/* Candidate info */}
+                      <td className="py-4 pr-4">
+                        <p className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
+                          {app.candidate?.name || 'Applicant'}
+                        </p>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
+                          <Mail className="w-3 h-3" />
+                          {app.candidate?.email}
+                        </p>
+                        {app.candidate?.profile?.headline && (
+                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 italic mt-0.5 line-clamp-1">
+                            "{app.candidate.profile.headline}"
+                          </p>
+                        )}
+                      </td>
+
+                      {/* Skills */}
+                      <td className="py-4 pr-4 max-w-xs">
+                        <div className="flex flex-wrap gap-1">
+                          {(app.candidate?.profile?.skills || []).slice(0, 4).map((s, idx) => (
+                            <span
+                              key={idx}
+                              className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-[10px]"
+                            >
+                              {s}
+                            </span>
+                          ))}
+                          {(app.candidate?.profile?.skills?.length || 0) > 4 && (
+                            <span className="text-[10px] text-zinc-400">
+                              +{app.candidate.profile.skills.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Resume & Cover Letter */}
+                      <td className="py-4 pr-4 space-y-1">
+                        {app.resume && (
+                          <a
+                            href={app.resume}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>{app.resumeOriginalName || 'Resume.pdf'}</span>
+                          </a>
+                        )}
+                        {app.coverLetter && (
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedLetter(app.coverLetter)}
+                              className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 underline"
+                            >
+                              <MessageSquare className="w-3 h-3" />
+                              Read Cover Letter
+                            </button>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Current Stage */}
+                      <td className="py-4 pr-4">
+                        <span className={`px-2.5 py-1 rounded-md text-[11px] font-semibold ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                      </td>
+
+                      {/* Date */}
+                      <td className="py-4 pr-4 text-zinc-500 dark:text-zinc-400 text-[11px]">
+                        {new Date(app.appliedAt).toLocaleDateString()}
+                      </td>
+
+                      {/* Status updater dropdown */}
+                      <td className="py-4 text-right">
+                        <select
+                          value={app.status}
+                          onChange={(e) => handleStatusUpdate(app._id, e.target.value)}
+                          className="text-xs font-semibold py-1 px-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 cursor-pointer focus:outline-none"
+                        >
+                          <option value="Applied">Applied</option>
+                          <option value="Under Review">Under Review</option>
+                          <option value="Shortlisted">Shortlisted</option>
+                          <option value="Interview">Interview</option>
+                          <option value="Hired">Hired</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-12 text-center space-y-2">
             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">

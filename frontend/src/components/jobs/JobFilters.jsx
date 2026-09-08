@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setFilters, resetFilters, fetchJobs } from '../../redux/slices/jobSlice';
 import { Search, MapPin, SlidersHorizontal, RotateCcw } from 'lucide-react';
 
-const JobFilters = () => {
+const JobFilters = ({ onApply }) => {
   const dispatch = useDispatch();
   const filters = useSelector((state) => state.jobs.filters);
 
@@ -145,6 +145,16 @@ const JobFilters = () => {
           <option value="oldest">Oldest First</option>
         </select>
       </div>
+
+      {onApply && (
+        <button
+          type="button"
+          onClick={onApply}
+          className="lg:hidden w-full btn-primary text-xs py-2 mt-4"
+        >
+          Apply Filters & Show Results
+        </button>
+      )}
     </div>
   );
 };

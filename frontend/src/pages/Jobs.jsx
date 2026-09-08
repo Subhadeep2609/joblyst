@@ -1,17 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJobs, setFilters } from '../redux/slices/jobSlice';
 import JobCard from '../components/jobs/JobCard';
 import JobFilters from '../components/jobs/JobFilters';
 import Loader from '../components/common/Loader';
-import { Briefcase, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import {
+  Briefcase,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 
 const Jobs = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { jobs, pagination, filters, loading } = useSelector((state) => state.jobs);
   const { savedJobs } = useSelector((state) => state.applications);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   useEffect(() => {
     // Read query parameters from URL if present
@@ -60,11 +69,29 @@ const Jobs = () => {
         </div>
       </div>
 
+      {/* Mobile & Tablet Filter Toggle Bar (Screens < lg) */}
+      <div className="lg:hidden flex items-center justify-between p-3.5 rounded-xl card-surface">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-sky-500" />
+          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+            Search & Filter Positions
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+          className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"
+        >
+          <span>{mobileFilterOpen ? 'Hide Filters' : 'Refine Filters'}</span>
+          {mobileFilterOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
       {/* Main Grid: Filters Sidebar + Results List */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        {/* Sidebar Filters */}
-        <aside className="lg:col-span-1 sticky top-20">
-          <JobFilters />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
+        {/* Sidebar Filters: sticky on lg:block, collapsible on mobile/tablet */}
+        <aside className={`lg:col-span-1 lg:block sticky top-20 ${mobileFilterOpen ? 'block' : 'hidden'}`}>
+          <JobFilters onApply={() => setMobileFilterOpen(false)} />
         </aside>
 
         {/* Results List */}

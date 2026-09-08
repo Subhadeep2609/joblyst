@@ -115,65 +115,123 @@ const RecruiterDashboard = () => {
             <Loader message="Loading your positions..." />
           </div>
         ) : recruiterJobs.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
-                  <th className="pb-3 font-semibold">Job Title</th>
-                  <th className="pb-3 font-semibold">Commitment</th>
-                  <th className="pb-3 font-semibold">Workplace</th>
-                  <th className="pb-3 font-semibold">Status</th>
-                  <th className="pb-3 font-semibold">Applicants</th>
-                  <th className="pb-3 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-                {recruiterJobs.slice(0, 6).map((job) => (
-                  <tr key={job._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
-                    <td className="py-3.5 pr-4">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+          <>
+            {/* Mobile Card View (Screens < md) */}
+            <div className="md:hidden space-y-3">
+              {recruiterJobs.slice(0, 6).map((job) => (
+                <div
+                  key={job._id}
+                  className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
                         {job.title}
                       </p>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                         Posted {new Date(job.createdAt).toLocaleDateString()}
                       </p>
-                    </td>
-                    <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                    </div>
+
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize shrink-0 ${
+                        job.status === 'published'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                      }`}
+                    >
+                      {job.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    <span className="px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 font-medium">
                       {job.jobType}
-                    </td>
-                    <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 font-medium">
                       {job.workplaceType}
-                    </td>
-                    <td className="py-3.5 pr-4">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${
-                          job.status === 'published'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                            : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                        }`}
-                      >
-                        {job.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 pr-4">
-                      <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">
+                    </span>
+                    <span>
+                      <strong className="text-zinc-900 dark:text-zinc-100 font-mono">
                         {job.applicationsCount || 0}
-                      </span>{' '}
-                      <span className="text-zinc-400 text-[11px]">candidates</span>
-                    </td>
-                    <td className="py-3.5 text-right space-x-2">
-                      <Link
-                        to={`/recruiter/jobs/${job._id}/applications`}
-                        className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
-                      >
-                        Review Applicants &rarr;
-                      </Link>
-                    </td>
+                      </strong>{' '}
+                      candidates
+                    </span>
+                  </div>
+
+                  <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/80 flex justify-end">
+                    <Link
+                      to={`/recruiter/jobs/${job._id}/applications`}
+                      className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                    >
+                      Review Applicants &rarr;
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (Screens >= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-medium">
+                    <th className="pb-3 font-semibold">Job Title</th>
+                    <th className="pb-3 font-semibold">Commitment</th>
+                    <th className="pb-3 font-semibold">Workplace</th>
+                    <th className="pb-3 font-semibold">Status</th>
+                    <th className="pb-3 font-semibold">Applicants</th>
+                    <th className="pb-3 font-semibold text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                  {recruiterJobs.slice(0, 6).map((job) => (
+                    <tr key={job._id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                      <td className="py-3.5 pr-4">
+                        <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+                          {job.title}
+                        </p>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          Posted {new Date(job.createdAt).toLocaleDateString()}
+                        </p>
+                      </td>
+                      <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                        {job.jobType}
+                      </td>
+                      <td className="py-3.5 pr-4 text-zinc-600 dark:text-zinc-400">
+                        {job.workplaceType}
+                      </td>
+                      <td className="py-3.5 pr-4">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${
+                            job.status === 'published'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                              : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                          }`}
+                        >
+                          {job.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 pr-4">
+                        <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">
+                          {job.applicationsCount || 0}
+                        </span>{' '}
+                        <span className="text-zinc-400 text-[11px]">candidates</span>
+                      </td>
+                      <td className="py-3.5 text-right space-x-2">
+                        <Link
+                          to={`/recruiter/jobs/${job._id}/applications`}
+                          className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                        >
+                          Review Applicants &rarr;
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-12 text-center space-y-3">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
