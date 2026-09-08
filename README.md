@@ -15,7 +15,22 @@ A full-stack, enterprise-grade Job Portal web application built with the **MERN 
   - **AI Job-Match Scoring:** Evaluates candidate qualifications against specific job requirements in real time to generate a match percentage and skill compatibility breakdown.
   - **AI Job Description Composer:** 1-click automated drafting of professional job descriptions, required skillsets, and key responsibilities for recruiters.
   - **AI Interview Preparation:** Interactive preparation suite generating deep Technical scenarios and Behavioral (STAR framework) questions with model answers. Features dynamic **"+ Fetch More Questions"** pagination to expand question sets on demand without wiping previous progress. Intelligent heuristic fallback ensures zero interruption when OpenAI API keys or quotas are unavailable.
+- **100% Fully Responsive Cross-Device Experience:** Built from the ground up to render flawlessly across mobile phones (320px–480px, including iPhone SE and compact Android devices), tablets in portrait & landscape (640px–1024px, including iPads), and desktop viewports. Features adaptive navigation drawers, collapsible job filter accordions, responsive dual-layout mobile cards for tables, and compact OTP input scaling.
 - **Minimalist SaaS Aesthetics:** Monochromatic Dark/Light mode theme with Tailwind CSS, custom scrollbars, and subtle Framer Motion micro-animations.
+
+---
+
+## 📱 Fully Responsive & Cross-Device Architecture
+
+JOBLYST delivers a first-class mobile and tablet experience through custom responsive patterns:
+
+| Responsive Feature | Target Screen Sizes | Implementation Details |
+| :--- | :--- | :--- |
+| **Adaptive Header & Navigation** | Tablets in Portrait & Phones (`< 1024px`) | Switches from inline desktop links to a dedicated slide-out drawer at the `lg` breakpoint. Eliminates link wrapping on iPads and provides full navigation with role icons, active state badges, and direct profile/logout controls. |
+| **Collapsible Job Filter Accordion** | Mobile & Tablets (`< 1024px`) | Replaces the static 150-line filter sidebar on small screens with a clean **"Refine Filters"** toggle. Prevents pushing job results down, allowing candidates to view listings immediately and filter on demand. |
+| **Dual-View Data Grids** | Mobile Phones (`< 768px`) | Recruiter and candidate management pages ([ManageJobs.jsx](file:///c:/Users/Subhadeep%20Saha/Desktop/Job_Portal_Project/frontend/src/pages/ManageJobs.jsx), [ManageApplications.jsx](file:///c:/Users/Subhadeep%20Saha/Desktop/Job_Portal_Project/frontend/src/pages/ManageApplications.jsx), and Dashboards) render native stacked cards on mobile (`block md:hidden`) and full 6-column analytical tables on desktop (`hidden md:block`), eliminating the need for tedious horizontal scrolling on phones. |
+| **Adaptive 6-Digit OTP Sizing** | Narrow Phones (320px – 360px) | Verification boxes scale adaptively (`w-9 sm:w-12`, `gap-1.5 sm:gap-2`, `p-4 sm:p-8`), guaranteeing zero horizontal overflow or clipping even on compact devices like iPhone SE. |
+| **Responsive Talent Pool Search** | Phones & Small Tablets (`< 768px`) | Form fields gracefully stack into full-width tap targets on mobile and small tablets, expanding into a balanced 3-column layout on desktop. |
 
 ---
 
@@ -25,7 +40,7 @@ A full-stack, enterprise-grade Job Portal web application built with the **MERN 
 - **Framework:** React 18+ (Vite)
 - **State Management:** Redux Toolkit (`authSlice`, `jobSlice`, `applicationSlice`, `aiSlice`, `themeSlice`)
 - **Routing:** React Router DOM v6 with route guards (`ProtectedRoute`, `RoleRoute`)
-- **Styling:** Tailwind CSS (custom dark/light tokens)
+- **Styling & Responsive System:** Tailwind CSS (custom dark/light tokens, responsive dual layouts, collapsible drawers)
 - **Icons & Motion:** `lucide-react`, `framer-motion`
 - **Feedback:** `react-hot-toast`
 - **HTTP Client:** Axios (automatic Bearer JWT injection & unified error handling)
