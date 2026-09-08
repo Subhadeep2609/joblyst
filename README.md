@@ -35,9 +35,7 @@ A full-stack, enterprise-grade Job Portal web application built with the **MERN 
 - **Database:** MongoDB with Mongoose ODM (text search compound indexes, relation population)
 - **Authentication:** JWT (JSON Web Tokens), `bcryptjs` password hashing, and Google OAuth 2.0 (`google-auth-library`)
 - **File Uploads & Cloud Storage:** Cloudinary streaming uploads via Multer memory storage (`cloudinary`, `multer`) with local disk fallback
-- **Document Text Extraction:** In-memory parsing for PDF and Word documents (`pdf-parse`, `mammoth`)
-- **Email Service:** Nodemailer with professional HTML templates & local terminal fallback
-- **Security:** `helmet`, `cors`, `express-rate-limit`, sanitized input handling
+- **Email Service:** Brevo (Sendinblue) Transactional REST API (HTTPS port 443 - zero SMTP blocking on Render) with Nodemailer SMTP fallback & terminal preview
 - **AI Integration:** Modular service with OpenAI API integration and intelligent heuristic fallback engine
 
 ---
@@ -162,7 +160,15 @@ MONGODB_URI=mongodb://127.0.0.1:27017/job_portal
 JWT_SECRET=job_portal_super_secret_jwt_key_2026_secure
 JWT_EXPIRES_IN=30d
 
-# Optional: Nodemailer SMTP (if left blank, OTPs will print in the backend console)
+# -------------------------------------------------------------------
+# Brevo (Sendinblue) Transactional Email (Required for Render)
+# Render blocks SMTP ports 25/465/587. Brevo REST API uses HTTPS (443)
+# -------------------------------------------------------------------
+BREVO_API_KEY=xkeysib-your_brevo_api_key_here
+BREVO_SENDER_EMAIL=your_verified_sender_email@gmail.com
+BREVO_SENDER_NAME=JOBLYST
+
+# Optional Nodemailer SMTP fallback (for local dev)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_SECURE=false
@@ -206,12 +212,64 @@ npm run dev
 
 ---
 
+## 🚀 Deploying to Render
+
+Render blocks outbound SMTP traffic on ports `25`, `465`, and `587` on free tier services. JOBLYST uses the **Brevo Transactional Email REST API over HTTPS (Port 443)** to guarantee 100% reliable email delivery with zero SMTP timeouts.
+
+### Step 1: Set Up Your Free Brevo Account
+1. Create a free account at [brevo.com](https://www.brevo.com) (includes 300 free emails/day).
+2. Go to **SMTP & API** -> **API Keys** -> Click **Generate a new API key**. Copy the key (starts with `xkeysib-...`).
+3. Go to **Senders, Domains & Dedicated IPs** -> **Senders** -> Click **Add a Sender**.
+4. Enter your email (e.g. `yourname@gmail.com`) and confirm the verification email sent to your inbox.
+
+### Step 2: Deploy Backend Web Service on Render
+1. In Render Dashboard, click **New +** -> **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the service:
+   - **Name:** `joblyst-backend`
+   - **Root Directory:** `backend`
+   - **Runtime:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+   - **Health Check Path:** `/api/health`
+4. Add **Environment Variables**:
+   - `NODE_ENV`: `production`
+   - `PORT`: `5000`
+   - `MONGODB_URI`: *Your MongoDB Atlas connection string*
+   - `JWT_SECRET`: *A secure random string (min 32 characters)*
+   - `BREVO_API_KEY`: *Your Brevo API Key (`xkeysib-...`)*
+   - `BREVO_SENDER_EMAIL`: *Your verified sender email in Brevo*
+   - `BREVO_SENDER_NAME`: `JOBLYST`
+   - `CLIENT_URL`: `https://joblyst-frontend.onrender.com` *(or your frontend domain)*
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: *(Your Cloudinary keys for resume storage)*
+   - `OPENAI_API_KEY`: *(Optional OpenAI key)*
+   - `GOOGLE_CLIENT_ID`: *(Optional Google OAuth client ID)*
+
+### Step 3: Deploy Frontend Static Site on Render
+1. In Render Dashboard, click **New +** -> **Static Site**.
+2. Connect your GitHub repository.
+3. Configure the site:
+   - **Name:** `joblyst-frontend`
+   - **Root Directory:** `frontend`
+   - **Build Command:** `npm install && npm run build`
+   - **Publish Directory:** `dist`
+4. Add **Environment Variables**:
+   - `VITE_API_URL`: `https://joblyst-backend.onrender.com/api` *(Your deployed backend URL)*
+   - `VITE_GOOGLE_CLIENT_ID`: *(Optional Google OAuth client ID)*
+5. In **Redirects / Rewrites**, add a rewrite rule to support React Router SPA:
+   - **Type:** `Rewrite`
+   - **Source:** `/*`
+   - **Destination:** `/index.html`
+
+---
+
 ## 📧 Testing the OTP Email Verification Flow
 
 1. Navigate to `/register`.
 2. Select your role (**Job Seeker** or **Recruiter**) and complete the registration form.
 3. You will be redirected to `/verify-email`.
-4. Check your terminal running the backend: the 6-digit OTP is clearly formatted and logged:
+4. If Brevo or SMTP is configured, the OTP arrives directly in your inbox.
+   If running in local developer fallback mode without keys, the 6-digit OTP is logged to the backend console:
    ```text
    ======================================================
    ✉️ [DEV EMAIL DISPATCH] To: user@example.com

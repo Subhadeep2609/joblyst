@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import fs from 'fs';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/authRoutes.js';
@@ -21,21 +22,33 @@ app.use(
   })
 );
 
-// CORS configuration
+// CORS configuration (Render, Vercel, and local development support)
+const configuredClients = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((url) => url.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
-  process.env.CLIENT_URL
-].filter(Boolean);
+  ...configuredClients
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      if (!origin) return callback(null, true);
+      const normalized = origin.replace(/\/$/, '');
+      if (
+        allowedOrigins.includes(normalized) ||
+        process.env.NODE_ENV !== 'production' ||
+        normalized.endsWith('.onrender.com') ||
+        normalized.endsWith('.vercel.app')
+      ) {
         callback(null, true);
       } else {
-        callback(new Error('CORS blocked origin'));
+        callback(new Error(`CORS blocked for origin: ${origin}`));
       }
     },
     credentials: true,
@@ -78,6 +91,24 @@ app.use('/api/users', userRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/ai', aiRoutes);
+
+// Optional: Serve frontend build in production if deployed as unified service
+const possibleDistPaths = [
+  path.resolve(process.cwd(), '..', 'frontend', 'dist'),
+  path.resolve(process.cwd(), 'public'),
+  path.resolve(process.cwd(), 'dist')
+];
+const distPath = possibleDistPaths.find((p) => fs.existsSync(p));
+
+if (distPath) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 // Error Handling Middlewares
 app.use(notFound);
